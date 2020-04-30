@@ -25,9 +25,13 @@ var GameOver, restart;
 //Sound Variables
 var collide_sound, jump_sound, checkPoint_sound;
 
+//HighScore Variable
+var HighestScore= 0;
+
+
 function preload() {
   //Load Trex Running and Collided Animation
-  trex_running = loadAnimation("trex1.png", "trex3.png", "trex4.png");
+  trex_running = loadAnimation("trex1.png", "trex3.png");
   trex_collided = loadImage("trex_collided.png");
 
   //Add Animation to ground
@@ -89,22 +93,22 @@ function setup() {
 
   GameOver.visible = false;
   restart.visible = false;
+  
 }
 
 function draw() {
-  background(180);
+  background("White");
 
   //Display Score
   text("Score: " + Score, 500, 50);
-
+  text("HI: "+ HighestScore, 400,50);
   //Make Invisible Ground support Trex
     trex.collide(invisibleGround);  
   
   if (gameState === PLAY) {
     Score = Score + Math.round(getFrameRate() / 60);
 
-    console.log(trex.y);
-    
+        
     //Make Trex Jump
     if (keyDown("space") && trex.y > 161) {
       jump_sound.play();
@@ -136,8 +140,13 @@ function draw() {
   } 
   
   else if (gameState === END) {
-    
+  
+   if(Score > HighestScore){ 
+   HighestScore = Score;
+   }
+     
   trex.changeAnimation("Collided", trex_collided);
+  trex.scale = 0.09;
     
   GameOver.visible = true;
   restart.visible = true;
@@ -163,7 +172,7 @@ function spawnClouds() {
     var cloud = createSprite(600, 120, 40, 10);
     cloud.y = Math.round(random(80, 120));
     cloud.addImage("cloud", cloudImage);
-    cloud.scale = 0.5;
+    cloud.scale = 0.025;
     cloud.velocityX = -3;
 
     cloud.lifetime = 200;
@@ -227,5 +236,15 @@ function reset(){
   
   trex.changeAnimation("running", trex_running);
   
+  
+  if(localStorage["HighestScore"] < Score){
+   localStorage["HighestScore"] = highScore; 
+  } 
+  
   Score = 0;
+  
+  trex.scale = 0.5;
+  
+  console.log(localStorage["HighestScore"]);
+
 }
